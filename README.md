@@ -23,9 +23,10 @@ python -m pip install -e ".[dev]"
 python scripts/run_study.py --lengths 50 100 200 --disorder 0 1 4 --samples 20
 ```
 
-Dabei werden `ipr_near_zero.csv`, `ipr_near_zero.png` und
-`probabilities.png` im Ordner `results/` gespeichert. `--no-plots` deaktiviert
-die Abbildungen, und `--output PFAD` wählt einen anderen Ausgabeordner.
+Dabei werden `ipr_near_zero.csv`, `ipr_near_zero.png`,
+`ipr_vs_length.png` und `probabilities.png` im Ordner `results/` gespeichert.
+`--no-plots` deaktiviert die Abbildungen, und `--output PFAD` wählt einen
+anderen Ausgabeordner.
 
 Die zentrale Funktion `diagonalize(...)` liefert die sortierten Eigenwerte und
 die zugehörigen normierten Eigenvektoren als Spaltenmatrix. `ipr_all(...)`
