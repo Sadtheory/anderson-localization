@@ -1,0 +1,267 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\title{Anderson-Lokalisierung verstehen\\
+\large Eine Schritt-für-Schritt-Anleitung zum Projekt}
+\author{Begleitmaterial zum Projektbericht}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{Worum geht es überhaupt?}
+Stell dir ein Elektron vor, das sich auf einer Reihe von Plätzen bewegen kann.
+Ohne Störungen kann sich seine Wellenfunktion über die ganze Kette
+ausbreiten. Jeder Platz ist dann gleichwertig und das Elektron ist nicht an
+einer bestimmten Stelle gefangen.
+
+In einem echten Material sind die Plätze aber nicht exakt gleich: Atome
+stehen leicht anders, Fremdatome können auftreten oder lokale elektrische
+Umgebungen unterscheiden sich. Diese zufälligen Unterschiede nennt man
+\emph{Unordnung}. Die zentrale Frage lautet:
+\begin{quote}
+ Wie stark muss die Unordnung sein, damit ein quantenmechanischer Zustand
+ räumlich konzentriert statt ausgedehnt ist?
+\end{quote}
+Das Überraschende ist: In einer idealisierten eindimensionalen Kette ist im
+unendlich großen System jede noch so kleine unabhängige Unordnung ausreichend,
+um Zustände zu lokalisieren. Bei einer endlichen Kette sehen wir allerdings
+einen Übergang, der von der Systemgröße abhängt.
+
+\section{Die drei wichtigsten Begriffe}
+\subsection{Tight-Binding}
+Wir ersetzen den Raum durch $L$ diskrete Plätze. Ein Zustand wird durch seine
+Amplituden
+\[
+ \psi=(\psi_1,\psi_2,\ldots,\psi_L)
+\]
+beschrieben. Die Wahrscheinlichkeit, das Elektron auf Platz $j$ zu finden,
+ist $|\psi_j|^2$. Für einen physikalischen Zustand gilt
+\[
+ \sum_{j=1}^L|\psi_j|^2=1.
+\]
+
+\subsection{Hopping}
+Das Elektron kann zwischen benachbarten Plätzen springen. Die Stärke dieses
+Sprungs heißt $t$. Große Werte von $t$ fördern Ausbreitung; kleine Werte
+machen die lokalen Platzenergien relativ wichtiger.
+
+\subsection{Unordnung}
+Jeder Platz erhält eine zufällige Energie
+\[
+ \epsilon_j\in[-W/2,W/2].
+\]
+Der Parameter $W$ beschreibt die Breite der Zufallsverteilung. Wichtig ist
+vor allem das Verhältnis $W/t$: Es vergleicht Unordnung mit Beweglichkeit.
+
+\section{Was bedeutet der Hamiltonoperator?}
+Der Hamiltonoperator ist die Matrix, die aus einem Zustand den Energieinhalt
+und die zeitliche Entwicklung bestimmt:
+\[
+ H=-t\sum_{j=1}^{L-1}\left(
+ |j\rangle\langle j+1|+|j+1\rangle\langle j|\right)
+ +\sum_{j=1}^{L}\epsilon_j|j\rangle\langle j|.
+\]
+Die Formel besteht aus zwei Teilen:
+\begin{enumerate}[label=\arabic*.]
+ \item Die Nebendiagonalen enthalten $-t$. Sie koppeln Nachbarplätze und
+ erlauben Bewegung.
+ \item Die Diagonale enthält $\epsilon_j$. Sie ist bei jeder
+ Unordnungsrealisierung anders.
+\end{enumerate}
+Offene Randbedingungen bedeuten, dass Platz $1$ nur mit Platz $2$ und Platz
+$L$ nur mit Platz $L-1$ verbunden ist. Es gibt keine Verbindung von $L$
+zurück nach $1$.
+
+\section{Was macht die Diagonalisierung?}
+Wir suchen Eigenzustände aus
+\[
+ H\psi^{(n)}=E_n\psi^{(n)}.
+\]
+Das Ergebnis sind:
+\begin{itemize}
+ \item Eigenwerte $E_n$: mögliche Energien,
+ \item Eigenvektoren $\psi^{(n)}$: räumliche Form der Zustände.
+\end{itemize}
+Im Programm liefert \texttt{numpy.linalg.eigh} die Energien sortiert und
+die Eigenvektoren als Spalten der Matrix \texttt{states}. Die Spalte
+\texttt{states[:, n]} gehört zu \texttt{energies[n]}.
+
+\subsection{Der saubere Benchmark}
+Für $W=0$ ist die Kette analytisch lösbar:
+\[
+ E_n=-2t\cos\left(\frac{n\pi}{L+1}\right).
+\]
+Dieser Vergleich ist entscheidend: Bevor man lokalisierte Zustände
+interpretiert, muss man wissen, dass die numerische Matrix und ihre
+Diagonalisierung korrekt funktionieren.
+
+\section{Die IPR als Lokalisierungsmaß}
+Die inverse Partizipationsrate ist
+\[
+ \operatorname{IPR}(\psi)=\sum_{j=1}^{L}|\psi_j|^4.
+\]
+Sie misst, auf wie viele Plätze ein Zustand effektiv verteilt ist.
+
+\subsection{Zwei Grenzfälle}
+\paragraph{Gleichmäßig ausgedehnt:}
+Wenn $|\psi_j|^2=1/L$, dann ist
+\[
+ \operatorname{IPR}=L\left(\frac{1}{L}\right)^2=\frac{1}{L}.
+\]
+Die IPR wird bei größerem System also kleiner.
+
+\paragraph{Auf einem Platz lokalisiert:}
+Wenn die gesamte Wahrscheinlichkeit auf einem Platz sitzt, ist
+\[
+ \operatorname{IPR}=1.
+\]
+
+\paragraph{Praktische Faustregel:}
+Sinkt die IPR ungefähr wie $1/L$, spricht das für einen ausgedehnten
+Zustand. Bleibt sie bei wachsendem $L$ ungefähr konstant, spricht das für
+Lokalisierung mit endlicher Lokalisierungslänge.
+
+\section{Der Programmablauf}
+Die wichtigsten Dateien sind:
+\begin{description}
+ \item[\texttt{src/anderson/hamiltonian.py}] Erzeugt $H$, diagonalisiert es
+ und berechnet IPR-Werte.
+ \item[\texttt{tests/test\_hamiltonian.py}] Prüft mathematische und
+ physikalische Grundbedingungen.
+ \item[\texttt{scripts/run\_study.py}] Führt viele Realisierungen durch und
+ speichert CSV-Datei und Abbildungen.
+ \item[\texttt{results/}] Enthält die erzeugten Daten und Grafiken.
+ \item[\texttt{report/main.tex}] Der kurze Abgabebericht.
+\end{description}
+
+\subsection{\texttt{hamiltonian}}
+\texttt{generator.uniform(-disorder/2, disorder/2, size=length)} erzeugt
+die zufälligen $\epsilon_j$. Danach werden Diagonale und beide
+Nebendiagonalen der Matrix gesetzt. Weil die Matrix symmetrisch ist, ist sie
+ein gültiger reeller Hamiltonoperator.
+
+\subsection{\texttt{diagonalize}}
+Die Funktion ruft zuerst \texttt{hamiltonian} auf und dann
+\texttt{np.linalg.eigh}. Der Zufallszahlengenerator wird übergeben, damit
+die Studie mit einem festen \texttt{seed} reproduzierbar ist.
+
+\subsection{Auswahl von $E\approx0$}
+Für jede Realisierung werden alle Energien berechnet. Der Index
+\[
+ n_0=\operatorname*{arg\,min}_n |E_n|
+\]
+wählt den Zustand aus, dessen Energie am nächsten bei der Bandmitte liegt.
+Dann wird \texttt{ipr(states[:, n0])} berechnet.
+
+\subsection{Warum viele Realisierungen?}
+Eine einzelne Zufallsverteilung kann ungewöhnlich sein. Deshalb wird für
+jede Kombination aus $L$ und $W/t$ mehrmals gerechnet. Das Programm
+speichert Mittelwert und Standardabweichung:
+\[
+ \overline{\mathrm{IPR}}=\frac1N\sum_{r=1}^N\mathrm{IPR}_r.
+\]
+Die Fehlerbalken zeigen, wie stark verschiedene Unordnungsrealisierungen
+streuen.
+
+\section{Unsere konkrete Studie}
+Wir haben gerechnet mit
+\[
+ L=50,100,200,400,\qquad
+ W/t=0,0.5,1,2,4,8
+\]
+und 30 Realisierungen pro Kombination. Ausgeführt wird zum Beispiel:
+\begin{verbatim}
+python scripts/run_study.py --lengths 50 100 200 400 \
+  --disorder 0 0.5 1 2 4 8 --samples 30
+\end{verbatim}
+
+\subsection{Wie liest man die Grafiken?}
+\begin{description}
+ \item[\texttt{probabilities.png}] Zeigt $|\psi_j|^2$ entlang der Kette.
+ Breite, relativ gleichmäßige Kurven sind ausgedehnt; schmale hohe Peaks
+ deuten auf Lokalisierung.
+ \item[\texttt{ipr\_near\_zero.png}] Zeigt IPR gegen $W/t$ für verschiedene
+ $L$. Größere Unordnung führt typischerweise zu größerer IPR.
+ \item[\texttt{ipr\_vs\_length.png}] Ist die wichtigste Skalierungsgrafik.
+ Eine fallende Gerade im Log-Log-Diagramm entspricht ungefähr $1/L$.
+ Eine Kurve, die sich abflacht, zeigt Sättigung der IPR.
+\end{description}
+
+\subsection{Was zeigen die aktuellen Zahlen?}
+Für $W=0$ erhalten wir ungefähr
+\[
+ \mathrm{IPR}(50)=0.0294,\qquad
+ \mathrm{IPR}(400)=0.00374.
+\]
+Das passt zu $1/50=0.020$ und $1/400=0.0025$ in der Größenordnung; die
+Abweichung entsteht, weil der ausgewählte Zustand bei endlicher offener Kette
+nicht exakt gleichmäßig ist. Die Werte sinken aber klar mit $L$.
+
+Für $W/t=8$ liegen die Mittelwerte ungefähr zwischen $0.36$ und $0.41$.
+Sie sinken nicht mehr proportional zu $1/L$. In unseren endlichen Ketten
+erscheint dieser Bereich daher deutlich lokalisiert. Bei $W/t=4$ ist die
+Sättigung schwächer, aber schon erkennbar.
+
+\section{Was man nicht behaupten sollte}
+\begin{enumerate}
+ \item Nicht sagen: ``Bei $W/t=4$ gibt es einen exakten Übergang.'' In
+ einer Dimension gibt es im thermodynamischen Limes keinen solchen
+ Übergang bei endlichem $W$.
+ \item Besser sagen: ``Für unsere endlichen Systemgrößen erscheinen die
+ Zustände ab ungefähr $W/t=4$ lokalisiert.''
+ \item Die IPR allein bestimmt nicht die gesamte Physik. Sie ist ein
+ kompaktes Diagnosewerkzeug, aber endliche Größen, statistische Streuung und
+ die Wahl des Zustands müssen diskutiert werden.
+\end{enumerate}
+
+\section{Mögliche Fragen im Vortrag}
+\begin{description}
+ \item[Warum ist die Matrix tridiagonal?] Weil nur benachbarte Plätze
+ miteinander koppeln.
+ \item[Warum ist \texttt{eigh} statt \texttt{eig} verwendet?] Die Matrix
+ ist reell symmetrisch; \texttt{eigh} nutzt diese Struktur und liefert
+ reelle Eigenwerte sowie orthonormale Eigenvektoren.
+ \item[Warum ist die IPR für einen ausgedehnten Zustand klein?] Die
+ Wahrscheinlichkeit verteilt sich auf viele Plätze, und die vierte Potenz
+ macht jeden einzelnen kleinen Beitrag noch kleiner.
+ \item[Warum mitteln wir?] Jede Unordnungsrealisierung ist zufällig; der
+ Mittelwert beschreibt das typische Verhalten besser.
+ \item[Was bedeutet der Seed?] Er macht die Zufallsfolge reproduzierbar,
+ sodass andere denselben Datensatz erzeugen können.
+ \item[Was würde bei $W=0$ passieren?] Die Eigenzustände sind
+ stehende Wellen der sauberen offenen Kette, und ihre IPR fällt mit $L$.
+\end{description}
+
+\section{Empfohlene Vorbereitung}
+\begin{enumerate}
+ \item Zeichne für $L=5$ die Matrix $H$ von Hand auf.
+ \item Erkläre an einem Vektor mit zwei oder drei Einträgen die Normierung.
+ \item Rechne die IPR für $(1/\sqrt{L},\ldots,1/\sqrt{L})$ selbst aus.
+ \item Starte das Skript einmal mit $L=10$, $W/t=0$ und einmal mit
+ $W/t=8$.
+ \item Öffne die CSV-Datei und finde die Zeilen für $L=50$ und $L=400$.
+ \item Erkläre anschließend in eigenen Worten, warum die Kurven bei großer
+ Unordnung abflachen.
+\end{enumerate}
+
+\section*{Kurzfassung zum Merken}
+\begin{quote}
+ H beschreibt Bewegung plus zufällige lokale Energien. Diagonalisierung
+ liefert Energien und Zustände. Die IPR misst, wie konzentriert ein Zustand
+ ist: $1/L$ bedeutet ausgedehnt, ein ungefähr konstanter Wert bedeutet
+ lokalisiert. Entscheidend ist die Entwicklung mit der Systemgröße.
+\end{quote}
+
+\end{document}

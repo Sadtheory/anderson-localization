@@ -32,6 +32,10 @@ Die zentrale Funktion `diagonalize(...)` liefert die sortierten Eigenwerte und
 die zugehörigen normierten Eigenvektoren als Spaltenmatrix. `ipr_all(...)`
 berechnet die IPR aller dieser Zustände.
 
+Für die Vorbereitung ohne Vorkenntnisse gibt es zusätzlich die ausführliche
+Schritt-für-Schritt-Anleitung `report/guide.pdf`; der eigentliche Kurzbericht
+steht in `report/main.pdf`.
+
 ## Physikalischer Benchmark
 
 Fuer `W=0` muessen die Eigenwerte einer Kette der Laenge `L` mit

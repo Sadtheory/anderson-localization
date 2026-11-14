@@ -52,7 +52,6 @@ def main() -> None:
     if not args.no_plots:
         _plot_ipr_scaling(rows, args.disorder, output)
         _plot_ipr_vs_length(rows, args.disorder, output)
-        _plot_ipr_vs_length(rows, args.disorder, output)
         _plot_probabilities(args.lengths[0], args.hopping, args.disorder, args.seed, output)
     print(f"Gespeichert: {output / 'ipr_near_zero.csv'}")
 
@@ -74,29 +73,6 @@ def _plot_ipr_scaling(
     axis.legend()
     figure.tight_layout()
     figure.savefig(output / "ipr_near_zero.png", dpi=160)
-    plt.close(figure)
-
-
-def _plot_ipr_vs_length(
-    rows: list[tuple[int, float, float, float]],
-    disorder_ratios: list[float],
-    output: Path,
-) -> None:
-    data = np.asarray(rows)
-    figure, axis = plt.subplots()
-    for ratio in disorder_ratios:
-        selected = data[np.isclose(data[:, 1], ratio)]
-        selected = selected[np.argsort(selected[:, 0])]
-        axis.errorbar(selected[:, 0], selected[:, 2], yerr=selected[:, 3],
-                      marker="o", capsize=3, label=f"W/t={ratio:g}")
-    axis.set(xlabel="Systemgröße L", ylabel="IPR nahe E=0",
-             title="Skalierung der IPR mit der Systemgröße")
-    axis.set_xscale("log")
-    axis.set_yscale("log")
-    axis.grid(alpha=0.25, which="both")
-    axis.legend()
-    figure.tight_layout()
-    figure.savefig(output / "ipr_vs_length.png", dpi=160)
     plt.close(figure)
 
 
