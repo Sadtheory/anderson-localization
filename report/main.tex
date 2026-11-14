@@ -121,10 +121,10 @@ python scripts/run_study.py --lengths 50 100 200 \
 \end{verbatim}
 erstellt werden.
 
-\begin{figure}[htbp]
+\begin{figure}[p]
   \centering
   \IfFileExists{../results/probabilities.png}{%
-    \includegraphics[width=0.88\textwidth]{../results/probabilities.png}%
+    \includegraphics[width=0.82\textwidth,height=0.72\textheight,keepaspectratio]{../results/probabilities.png}%
   }{%
     \fbox{\parbox{0.8\textwidth}{\centering
     Abbildung wird nach dem Ausführen von \texttt{run\_study.py} eingefügt.}}%
@@ -153,12 +153,40 @@ wenige Plätze.
   \label{fig:ipr}
 \end{figure}
 
+\begin{figure}[htbp]
+  \centering
+  \IfFileExists{../results/ipr_vs_length.png}{%
+    \includegraphics[width=0.82\textwidth]{../results/ipr_vs_length.png}%
+  }{%
+    \fbox{\parbox{0.8\textwidth}{\centering
+    Abbildung wird nach dem Ausführen von \texttt{run\_study.py} eingefügt.}}%
+  }
+  \caption{IPR nahe $E=0$ in Abhängigkeit von der Systemgröße. Eine
+  $1/L$-Skalierung entspricht ausgedehnten Zuständen; eine Sättigung deutet
+  auf Lokalisierung auf einer endlichen Länge hin.}
+  \label{fig:ipr-length}
+\end{figure}
+
 Bei wachsendem $W/t$ steigt die IPR typischerweise an, weil die effektive
 Ausdehnung des Zustands abnimmt. Für $W=0$ skaliert die IPR mit $1/L$.
 Bei endlichen Systemen erscheint ein Zustand dann lokalisiert, wenn die IPR
 bei einer Vergrößerung von $L$ nicht mehr proportional zu $1/L$ abnimmt.
 Die genaue Grenze ist dabei eine finite-size-Erscheinung und kein scharfer
 Übergang in einer Dimension.
+
+Für die vorliegende Studie wurden die Systemgrößen $L=50,100,200,400$,
+die Werte $W/t=0,0.5,1,2,4,8$ und jeweils 30 unabhängige
+Unordnungsrealisierungen verwendet. Für $W=0$ erhält man beispielsweise
+\[
+ \operatorname{IPR}(L=50)\simeq 0.0294,\qquad
+ \operatorname{IPR}(L=400)\simeq 0.00374,
+\]
+was sehr gut mit der erwarteten Skalierung $1/L$ übereinstimmt. Für $W/t=8$
+liegen die gemittelten IPR-Werte dagegen zwischen etwa $0.36$ und $0.41$
+und ändern sich bei einer Vergrößerung von $L$ nur noch wenig. In diesen
+endlichen Systemen erscheinen Zustände ab ungefähr $W/t=4$ deutlich
+lokalisiert; dies ist als finite-size-Kriterium und nicht als scharfer
+Übergang zu verstehen.
 
 \section{Diskussion}
 Die numerischen Resultate müssen im Kontext endlicher Ketten interpretiert
